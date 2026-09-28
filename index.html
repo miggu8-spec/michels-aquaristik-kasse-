@@ -119,7 +119,60 @@ function openJournal(){closeCart();journalEl.style.display='block';renderJournal
 function localDateKey(d){let y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
 function renderJournal(selectedDate){let all=JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]'),now=new Date(),defaultKey=localDateKey(now),key=selectedDate||defaultKey,parts=key.split('-').map(Number),chosen=new Date(parts[0],parts[1]-1,parts[2]);if(isNaN(chosen.getTime())){chosen=now;key=defaultKey}let daySales=[],bar=0,twint=0,card=0,total=0,monthSales=[],mbar=0,mtwint=0,mcard=0,mtotal=0;for(let sale of all){let d=new Date(sale.date),amount=Number(sale.total)||0;if(d.getFullYear()===chosen.getFullYear()&&d.getMonth()===chosen.getMonth()){monthSales.push(sale);mtotal+=amount;if(sale.payment==='Bar')mbar+=amount;if(sale.payment==='TWINT')mtwint+=amount;if(sale.payment==='Karte')mcard+=amount}if(localDateKey(d)===key){daySales.push(sale);total+=amount;if(sale.payment==='Bar')bar+=amount;if(sale.payment==='TWINT')twint+=amount;if(sale.payment==='Karte')card+=amount}}let dateText=chosen.toLocaleDateString('de-CH'),monthText=chosen.toLocaleDateString('de-CH',{month:'long',year:'numeric'});let summary=`<div class=summary><h3>📊 Tagesabschluss</h3><div class=datefilter><label>Datum<input id=journalDate type=date value="${key}"></label><button type=button onclick="renderJournal(document.getElementById('journalDate').value)">Anzeigen</button></div><div class=sumdate>${dateText}</div><div class=sumgrid><div class=sumcard><small>Verkäufe</small><b>${daySales.length}</b></div><div class=sumcard><small>Bar</small><b>${money(bar)}</b></div><div class=sumcard><small>TWINT</small><b>${money(twint)}</b></div><div class=sumcard><small>Karte</small><b>${money(card)}</b></div><div class="sumcard sumtotal"><small>Gesamtumsatz</small><b>${money(total)}</b></div></div><div class=monthsummary><h3>📅 Monatsübersicht</h3><div class=sumdate>${monthText}</div><div class=sumgrid><div class=sumcard><small>Verkäufe</small><b>${monthSales.length}</b></div><div class=sumcard><small>Bar</small><b>${money(mbar)}</b></div><div class=sumcard><small>TWINT</small><b>${money(mtwint)}</b></div><div class=sumcard><small>Karte</small><b>${money(mcard)}</b></div><div class="sumcard sumtotal"><small>Monatsumsatz</small><b>${money(mtotal)}</b></div></div></div></div>`;let sales=all.slice().reverse(),list=sales.length?sales.map(s=>`<div class=sale><div class=saleTop><div><b>Beleg ${String(s.receiptNo).padStart(6,'0')}</b><br><small>${new Date(s.date).toLocaleString('de-CH',{dateStyle:'short',timeStyle:'short'})} · ${esc(s.payment)}</small></div><b>${money(s.total)}</b></div><div class=saleItems>${s.items.map(x=>`${x.qty} × ${esc(x.name)}`).join('<br>')}</div><button type=button onclick="reprint(${s.receiptNo})">🖨️ Beleg anzeigen / drucken</button><button type=button class="deleteSale" onclick="deleteSale(${s.receiptNo})">🗑️ Verkauf löschen</button></div>`).join(''):'<div class=empty>Noch keine Verkäufe gespeichert.</div>';journalBodyEl.innerHTML=summary+list}
 function reprint(nr){let sales=JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]'),sale=sales.find(s=>s.receiptNo===nr);if(!sale)return;lastReceipt=receiptText(sale);closeJournal();openCart();receiptEl.innerHTML=`<div class=receipt>${esc(lastReceipt)}</div>`;printBtn.style.display='block'}
-async function deleteSale(nr){let sales=JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]'),sale=sales.find(s=>Number(s.receiptNo)===Number(nr));if(!sale)return alert('Verkauf nicht gefunden.');let beleg=String(sale.receiptNo).padStart(6,'0');if(!confirm('Beleg '+beleg+' wirklich löschen?\n\nDie verkauften Artikel werden wieder dem Lagerbestand gutgeschrieben.'))return;for(const item of sale.items||[]){let p=products.find(x=>Number(x.id)===Number(item.id));if(p&&p.stock!==null)p.stock=(Number(p.stock)||0)+(Number(item.qty)||0)}sales=sales.filter(s=>Number(s.receiptNo)!==Number(nr));localStorage.setItem('ma_mobile_sales',JSON.stringify(sales));localStorage.setItem('ma_mobile_products',JSON.stringify(products));try{if(cloudReady){await sb('sales?receipt_no=eq.'+encodeURIComponent(nr),{method:'DELETE'});await saveProductsNow();await cloudSyncState()}}catch(e){console.error('Verkauf in Cloud löschen fehlgeschlagen',e);alert('⚠️ Verkauf wurde lokal gelöscht, aber die Online-Speicherung konnte nicht aktualisiert werden. Bitte Internetverbindung prüfen.')}render();renderJournal(document.getElementById('journalDate')?.value);alert('✅ Beleg '+beleg+' gelöscht.\n\nDie Artikel wurden dem Lagerbestand wieder gutgeschrieben.')}
+async function deleteSale(nr){
+  let sales=JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]'),sale=sales.find(s=>Number(s.receiptNo)===Number(nr));
+  if(!sale)return alert('Verkauf nicht gefunden.');
+  let beleg=String(sale.receiptNo).padStart(6,'0');
+  if(!confirm('Beleg '+beleg+' wirklich löschen?\n\nDie verkauften Artikel werden wieder dem Lagerbestand gutgeschrieben.'))return;
+  if(!cloudReady)return alert('⚠️ Online-Speicher ist noch nicht bereit. Bitte kurz warten und erneut versuchen.');
+  if(cloudBusy)return alert('⚠️ Die Online-Speicherung läuft gerade. Bitte kurz warten und nochmals versuchen.');
+
+  clearTimeout(cloudTimer); cloudTimer=null; cloudBusy=true;
+  const oldLocalProducts=JSON.stringify(products);
+  try{
+    // Zuerst Beleg dauerhaft in Supabase löschen und direkt kontrollieren.
+    await sb('sales?receipt_no=eq.'+encodeURIComponent(nr),{method:'DELETE'});
+    const saleCheck=await sb('sales?receipt_no=eq.'+encodeURIComponent(nr)+'&select=receipt_no');
+    if(saleCheck&&saleCheck.length)throw new Error('Beleg konnte online nicht gelöscht werden.');
+
+    // Erst danach Lagerbestand anhand des aktuellen Supabase-Bestands zurückbuchen.
+    const qtyById=new Map();
+    for(const item of sale.items||[]){
+      const id=Number(item.id), qty=Number(item.qty)||0;
+      if(Number.isFinite(id)&&qty>0)qtyById.set(id,(qtyById.get(id)||0)+qty);
+    }
+    for(const [id,qty] of qtyById){
+      let p=products.find(x=>Number(x.id)===id);
+      if(!p||p.stock===null)continue;
+      const rows=await sb('products?id=eq.'+encodeURIComponent(id)+'&select=id,stock');
+      if(!rows||!rows.length)throw new Error('Produkt '+id+' fehlt in Supabase.');
+      if(rows[0].stock===null)continue;
+      const newStock=(Number(rows[0].stock)||0)+qty;
+      const updated=await sb('products?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{'Prefer':'return=representation'},body:JSON.stringify({stock:newStock})});
+      if(!updated||!updated.length||Number(updated[0].stock)!==newStock)throw new Error('Bestand von Produkt '+id+' wurde nicht bestätigt.');
+      p.stock=newStock;
+    }
+
+    sales=sales.filter(s=>Number(s.receiptNo)!==Number(nr));
+    localStorage.setItem('ma_mobile_sales',JSON.stringify(sales));
+    localStorage.setItem('ma_mobile_products',JSON.stringify(products));
+    render();
+    renderJournal(document.getElementById('journalDate')?.value);
+    alert('✅ Beleg '+beleg+' dauerhaft gelöscht.\n\nDer Lagerbestand wurde in Supabase zurückgebucht.');
+  }catch(e){
+    console.error('Verkauf löschen / Bestand zurückbuchen fehlgeschlagen',e);
+    products=JSON.parse(oldLocalProducts);
+    localStorage.setItem('ma_mobile_products',JSON.stringify(products));
+    alert('⚠️ Online-Löschung/Rückbuchung wurde nicht vollständig bestätigt. Die Kasse lädt jetzt den Supabase-Stand neu.');
+    cloudBusy=false;
+    await initCloud();
+    render();
+    renderJournal(document.getElementById('journalDate')?.value);
+    return;
+  }finally{
+    cloudBusy=false;
+  }
+}
 function openInventory(){closeCart();inventoryEl.style.display='block';renderInventory()}function closeInventory(){inventoryEl.style.display='none';render()}
 function editProduct(id){renderInventory(id);inventoryEl.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>document.getElementById('invName')?.focus(),250)}
 function renderInventory(editId){let editing=editId?products.find(p=>Number(p.id)===Number(editId)):null,currentImage=editing?.image||'',catOptions=categories.map(c=>`<option value="${esc(c)}" ${c===(editing?.category||'Pflanzen')?'selected':''}>${esc(c)}</option>`).join('');let catManager=`<div class=catmanage><b>🏷️ Eigene Kategorien</b><div style="display:flex;gap:7px;margin-top:8px"><input id=newCat style="margin:0" placeholder="Neue Kategorie"><button type=button onclick=addCategory()>+ Hinzufügen</button></div><div class=catrow>${categories.map(c=>`<span class=catpill>${esc(c)} <button type=button onclick="deleteCategory('${encodeURIComponent(c)}')">×</button></span>`).join('')}</div></div>`;let backup=`<div class=backupbox><b>💾 Datensicherung</b><div class=backupnote>Backup für Produkte, Fotos, Lagerbestand, Kategorien, Verkäufe und Belegnummer.</div><div class=backupactions><button type=button onclick=exportBackup()>⬇️ Backup erstellen</button><label>📥 Backup wiederherstellen<input type=file accept="application/json,.json" onchange=importBackup(this)></label></div></div>`;let form=backup+`<div class=invform><h3>${editing?'Produkt bearbeiten':'Neues Produkt'}</h3>${catManager}<input id=invName placeholder="Produktname" value="${esc(editing?.name||'')}"><input id=invPrice type=number min=0 step=.05 placeholder="Einzelpreis CHF" value="${editing?.price??''}"><div class=pkgbox><b>📦 Paketpreis (optional)</b><input id=invPackageQty type=number min=2 step=1 placeholder="Anzahl im Paket" value="${editing?.packageQty??''}"><input id=invPackagePrice type=number min=0 step=.05 placeholder="Paketpreis CHF" value="${editing?.packagePrice??''}"></div><input id=invStock type=number min=0 step=1 placeholder="Lagerbestand (leer = variabel)" value="${editing?.stock??''}"><select id=invCat>${catOptions}</select><input id=invImage type=hidden value="${esc(currentImage)}"><label class=photoPick>📷 Foto vom Handy auswählen<input id=invPhoto type=file accept="image/*" onchange=chooseProductPhoto(this)></label><div id=invPhotoPreview class=photoPreview style="display:${currentImage?'block':'none'}">${currentImage?`<img src="${esc(currentImage)}">`:''}</div><input id=invMin type=number min=0 step=1 placeholder="Mindestbestand" value="${editing?.minStock??2}"><button type=button onclick="saveProduct(${editing?.id||'null'})">${editing?'Änderungen speichern':'Produkt anlegen'}</button>${editing?` <button type=button class=edit onclick=renderInventory()>Abbrechen</button>`:''}</div>`;let list=products.map(p=>{let low=p.stock!==null&&p.stock<=(p.minStock??2);return `<div class=invcard><div class=invtop><div><b>${esc(p.name)}</b><br><small>${esc(p.category)} · ${money(p.price)}</small></div><b class="${low?'invlow':''}">${p.stock===null?'variabel':p.stock+' Stk.'}</b></div>${low?'<div class=warn>⚠️ Mindestbestand erreicht oder unterschritten</div>':''}<div class=invactions>${p.stock!==null?`<button type=button onclick="stockChange(${p.id},1)">+1 Wareneingang</button><button type=button onclick="stockChange(${p.id},5)">+5</button>`:''}<button type=button class=edit onclick="editProduct(${p.id})">✏️ Bearbeiten</button><button type=button class=deletebtn onclick="deleteProduct(${p.id})">🗑️ Löschen</button></div></div>`}).join('');invBodyEl.innerHTML=form+list}
