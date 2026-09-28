@@ -127,61 +127,64 @@ async function deleteSale(nr){
   if(!cloudReady)return alert('⚠️ Online-Speicher ist noch nicht bereit. Bitte kurz warten und erneut versuchen.');
   if(cloudBusy)return alert('⚠️ Die Online-Speicherung läuft gerade. Bitte kurz warten und nochmals versuchen.');
 
-  // Wichtig: einen eventuell wartenden Auto-Sync stoppen. Sonst könnte er
-  // während der Rückbuchung einen alten lokalen Bestand wieder hochladen.
   clearTimeout(cloudTimer); cloudTimer=null; cloudBusy=true;
   const oldLocalProducts=JSON.stringify(products);
+  let step='Start';
   try{
-    // Mengen pro Produkt zusammenfassen und den AKTUELLEN Bestand aus Supabase lesen.
+    step='1/5 – Beleg vor dem Löschen in Supabase suchen';
+    const before=await sb('sales?receipt_no=eq.'+encodeURIComponent(nr)+'&select=receipt_no');
+    if(!before||!before.length)throw new Error('Beleg '+beleg+' ist in Supabase bereits nicht vorhanden.');
+
+    step='2/5 – Beleg aus sales löschen';
+    await sb('sales?receipt_no=eq.'+encodeURIComponent(nr),{method:'DELETE',headers:{'Prefer':'return=representation'}});
+
+    step='3/5 – Prüfen, ob der Beleg wirklich gelöscht wurde';
+    const saleCheck=await sb('sales?receipt_no=eq.'+encodeURIComponent(nr)+'&select=receipt_no');
+    if(saleCheck&&saleCheck.length)throw new Error('DELETE wurde gesendet, aber Beleg '+beleg+' ist weiterhin in sales vorhanden. Sehr wahrscheinlich blockiert die DELETE-Richtlinie/RLS.');
+
     const qtyById=new Map();
     for(const item of sale.items||[]){
       const id=Number(item.id), qty=Number(item.qty)||0;
-      if(Number.isFinite(id)&&qty>0) qtyById.set(id,(qtyById.get(id)||0)+qty);
+      if(Number.isFinite(id)&&qty>0)qtyById.set(id,(qtyById.get(id)||0)+qty);
     }
 
+    step='4/5 – Lagerbestand in products zurückbuchen';
     for(const [id,qty] of qtyById){
       let p=products.find(x=>Number(x.id)===id);
       if(!p||p.stock===null)continue;
       const rows=await sb('products?id=eq.'+encodeURIComponent(id)+'&select=id,stock');
-      if(!rows||!rows.length)throw new Error('Produkt '+id+' fehlt in Supabase.');
+      if(!rows||!rows.length)throw new Error('Produkt-ID '+id+' wurde in Supabase nicht gefunden.');
       if(rows[0].stock===null)continue;
-      const newStock=(Number(rows[0].stock)||0)+qty;
+      const oldStock=Number(rows[0].stock)||0, newStock=oldStock+qty;
       const updated=await sb('products?id=eq.'+encodeURIComponent(id),{
-        method:'PATCH',
-        headers:{'Prefer':'return=representation'},
-        body:JSON.stringify({stock:newStock})
+        method:'PATCH',headers:{'Prefer':'return=representation'},body:JSON.stringify({stock:newStock})
       });
-      if(!updated||!updated.length||Number(updated[0].stock)!==newStock)throw new Error('Bestand von Produkt '+id+' wurde nicht bestätigt.');
-      p.stock=newStock;
+      if(!updated||!updated.length)throw new Error('UPDATE für Produkt-ID '+id+' lieferte keine bestätigte Zeile. RLS/UPDATE-Policy prüfen.');
+      if(Number(updated[0].stock)!==newStock)throw new Error('Produkt-ID '+id+': erwartet '+newStock+', Supabase meldet '+updated[0].stock+'.');
     }
 
-    // Lokalen Stand sofort auf denselben bestätigten Stand setzen.
-    localStorage.setItem('ma_mobile_products',JSON.stringify(products));
-
-    // Danach den Beleg in Supabase löschen und prüfen.
-    await sb('sales?receipt_no=eq.'+encodeURIComponent(nr),{method:'DELETE'});
-    const saleCheck=await sb('sales?receipt_no=eq.'+encodeURIComponent(nr)+'&select=receipt_no');
-    if(saleCheck&&saleCheck.length)throw new Error('Beleg konnte online nicht gelöscht werden.');
+    step='5/5 – Endkontrolle';
+    for(const [id] of qtyById){
+      const check=await sb('products?id=eq.'+encodeURIComponent(id)+'&select=id,stock');
+      if(!check||!check.length)throw new Error('Produkt-ID '+id+' fehlt bei der Endkontrolle.');
+      const p=products.find(x=>Number(x.id)===id); if(p&&p.stock!==null)p.stock=Number(check[0].stock);
+    }
 
     sales=sales.filter(s=>Number(s.receiptNo)!==Number(nr));
     localStorage.setItem('ma_mobile_sales',JSON.stringify(sales));
-    render();
-    renderJournal(document.getElementById('journalDate')?.value);
-    alert('✅ Beleg '+beleg+' gelöscht.\n\nDie Artikel wurden dauerhaft dem Lagerbestand gutgeschrieben.');
+    localStorage.setItem('ma_mobile_products',JSON.stringify(products));
+    render(); renderJournal(document.getElementById('journalDate')?.value);
+    alert('✅ Beleg '+beleg+' dauerhaft gelöscht.\n\nSupabase hat Löschung und Lagerrückbuchung bestätigt.');
   }catch(e){
-    console.error('Verkauf löschen / Bestand zurückbuchen fehlgeschlagen',e);
+    console.error('DIAGNOSE – '+step,e);
     products=JSON.parse(oldLocalProducts);
     localStorage.setItem('ma_mobile_products',JSON.stringify(products));
-    const exactError=(e&&e.message)?e.message:String(e);
-    alert('⚠️ Online-Löschung/Rückbuchung fehlgeschlagen.\\n\\nSUPABASE-FEHLER:\\n'+exactError+'\\n\\nDie Kasse lädt jetzt den Supabase-Stand neu.');
+    alert('❌ FEHLER BEI '+step+'\n\n'+(e?.message||String(e))+'\n\nBitte von GENAU dieser Meldung einen Screenshot machen.');
     cloudBusy=false;
-    await initCloud();
-    render();
-    renderJournal(document.getElementById('journalDate')?.value);
+    try{await initCloud()}catch(_e){}
+    render(); renderJournal(document.getElementById('journalDate')?.value);
     return;
-  }finally{
-    cloudBusy=false;
-  }
+  }finally{cloudBusy=false;}
 }
 function openInventory(){closeCart();inventoryEl.style.display='block';renderInventory()}function closeInventory(){inventoryEl.style.display='none';render()}
 function editProduct(id){renderInventory(id);inventoryEl.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>document.getElementById('invName')?.focus(),250)}
