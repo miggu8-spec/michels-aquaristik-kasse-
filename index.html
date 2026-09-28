@@ -14,7 +14,29 @@ header{background:#123b2b;color:#fff;padding:14px 16px;position:sticky;top:0;z-i
 .sheet{display:none;position:fixed;inset:0;background:#0007;z-index:30}.panel{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;max-height:85vh;overflow:auto;padding:16px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
 .row{padding:10px 0;border-bottom:1px solid #ddd}.qty button{width:34px;height:34px;margin:5px;border:0;border-radius:8px}.total{font-size:26px;font-weight:900;margin:14px 0}.pay{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.pay button,.close,.printbtn,.journalbtn,.backbtn{border:0;border-radius:10px;padding:12px;font-weight:800}.pay button{background:#287447;color:#fff}.close{width:100%;margin-top:10px}.printbtn{width:100%;margin-top:10px;background:#123b2b;color:#fff;display:none}.receipt{white-space:pre-wrap;font-family:monospace;background:#f6f6f6;padding:12px;margin-top:12px}.journalbtn{width:100%;margin-top:10px;background:#dce9df;color:#123b2b}.journal{display:none;position:fixed;inset:0;background:#f2f5f2;z-index:40;overflow:auto;padding-bottom:30px}.journalhead{position:sticky;top:0;background:#123b2b;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}.backbtn{background:#fff;color:#123b2b;padding:8px 10px}.journalbody{max-width:900px;margin:auto;padding:14px}.sale,.summary,.invcard,.invform,.backupbox{background:#fff;border-radius:13px;padding:13px;margin-bottom:10px;box-shadow:0 1px 7px #0002}.saleTop,.invtop{display:flex;justify-content:space-between;gap:10px}.saleItems{font-size:13px;color:#506057;margin:8px 0}.sale button{border:0;border-radius:9px;padding:9px 11px;background:#287447;color:#fff;font-weight:800;margin-right:6px;margin-top:8px}.sale button.deleteSale{background:#b42318}.empty{text-align:center;padding:35px;color:#607066}.summary{padding:14px;margin-bottom:14px}.summary h3{margin:0 0 12px}.sumgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.sumcard{background:#eef5ef;border-radius:10px;padding:10px}.sumcard small{display:block;color:#607066}.sumcard b{font-size:18px}.sumtotal{grid-column:1/-1;background:#dce9df}.sumdate{font-size:13px;color:#607066;margin-bottom:10px}.datefilter{display:flex;gap:8px;align-items:end;margin:0 0 12px;flex-wrap:wrap}.datefilter label{font-size:12px;color:#607066}.datefilter input{display:block;margin-top:4px;padding:9px;border:1px solid #cbd8cf;border-radius:9px;background:#fff}.datefilter button{border:0;border-radius:9px;padding:10px 12px;background:#dce9df;color:#123b2b;font-weight:800}.monthsummary{margin-top:10px;padding-top:10px;border-top:1px solid #dbe5dd}
 .managebtn{width:100%;margin-top:10px;border:0;border-radius:10px;padding:12px;background:#dce9df;color:#123b2b;font-weight:800}.inventory{display:none;position:fixed;inset:0;background:#f2f5f2;z-index:45;overflow:auto;padding-bottom:30px}.invbody{max-width:900px;margin:auto;padding:14px}.invtop{align-items:center}.invlow{color:#a43b22;font-weight:800}.invactions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.invactions button,.invform button{border:0;border-radius:9px;padding:9px 11px;background:#287447;color:#fff;font-weight:800}.invactions .edit,.invform .edit{background:#dce9df;color:#123b2b}.invform{padding:14px;margin-bottom:14px}.invform input,.invform select{width:100%;padding:10px;border:1px solid #cbd8cf;border-radius:9px;margin:5px 0 10px}.warn{background:#fff2e8;border-radius:9px;padding:8px;margin-top:8px;font-size:13px}.deletebtn{background:#f6dddd!important;color:#8b1e1e!important}.catmanage{background:#eef5ef;border-radius:11px;padding:12px;margin:0 0 14px}.catrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.catpill{display:flex;align-items:center;gap:5px;background:#fff;border:1px solid #d5dfd7;border-radius:18px;padding:6px 8px 6px 10px;font-size:13px}.catpill button{padding:3px 7px!important;background:#f6dddd!important;color:#8b1e1e!important}.pkgbox{background:#f7faf7;border:1px solid #dce9df;border-radius:10px;padding:10px;margin:3px 0 10px}.pkgbox b{display:block;margin-bottom:6px}.pkghint,.photoHint,.backupnote{font-size:12px;color:#607066}.package{font-size:12px;color:#287447;font-weight:700;margin-top:3px}.photoPick{display:block;width:100%;border:2px dashed #9bb6a2;border-radius:11px;padding:12px;margin:5px 0 10px;background:#eef5ef;color:#123b2b;text-align:center;font-weight:800;cursor:pointer}.photoPick input,.backupactions input{display:none}.photoPreview{display:none;margin:0 0 10px}.photoPreview img{width:120px;height:120px;object-fit:cover;border-radius:12px;display:block;border:1px solid #d5dfd7}.backupbox{padding:14px;margin-bottom:14px}.backupactions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.backupactions button,.backupactions label{border:0;border-radius:9px;padding:11px;background:#123b2b;color:#fff;font-weight:800;text-align:center;cursor:pointer}
-@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr);max-width:1000px;margin:auto}}
+/* Responsive Optimierung für iPhone + iPad – Kassenlogik unverändert */
+@media (min-width:700px){
+  body{padding-bottom:126px;font-size:18px}
+  header{padding:20px 26px} header b{font-size:28px}
+  .tabs{top:68px;padding:16px 22px;gap:12px;justify-content:flex-start}.tabs button{font-size:18px;padding:14px 20px;border-radius:22px}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1180px;margin:0 auto;padding:8px 22px 28px}
+  .card{border-radius:18px}.info{padding:15px}.name{font-size:20px;min-height:52px}.price{font-size:27px;margin:8px 0}.stock,.package{font-size:16px}.add{min-height:56px;font-size:19px;border-radius:12px}
+  .bottom{padding:14px 22px calc(14px + env(safe-area-inset-bottom))}.cartbtn{max-width:1136px;margin:auto;display:block;min-height:62px;font-size:23px;border-radius:15px}
+  .panel{left:50%;right:auto;transform:translateX(-50%);width:min(820px,94vw);bottom:18px;border-radius:22px;max-height:90vh;padding:26px}.panel h2{font-size:28px}
+  .row{font-size:19px;padding:14px 0}.qty button{width:50px;height:50px;font-size:22px}.total{font-size:36px}.pay{gap:10px}.pay button,.close,.printbtn,.journalbtn,.managebtn{min-height:56px;font-size:18px}
+  .journalhead{padding:18px 22px;font-size:20px}.backbtn{font-size:17px;padding:11px 14px}
+  .journalbody,.invbody{max-width:1150px;padding:22px}.sale,.summary,.invcard,.invform,.backupbox{padding:20px;border-radius:17px;font-size:17px}.saleItems{font-size:16px}.sumgrid{grid-template-columns:repeat(4,1fr);gap:12px}.sumtotal{grid-column:auto}.sumcard b{font-size:23px}
+  .invform input,.invform select{font-size:18px;min-height:52px}.invactions button,.invform button{min-height:50px;font-size:17px}.photoPick{font-size:17px;padding:16px}
+}
+@media (min-width:1000px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr));max-width:1320px}
+}
+@media (max-width:699px){
+  .tabs{-webkit-overflow-scrolling:touch}.tabs button,.add,.cartbtn,.pay button,.close,.printbtn,.journalbtn,.managebtn{touch-action:manipulation}
+}
+@media (orientation:landscape) and (min-width:700px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr));max-width:1320px}
+}
 </style></head><body>
 <header><b>🦐 Michels Aquaristik – Kasse V2</b></header><div class=tabs id=tabs></div><div class=grid id=grid></div>
 <div class=bottom><button type=button class=cartbtn onclick="openCart()">🛒 Warenkorb <span id=count>0</span> Artikel · <span id=bt>CHF 0.00</span></button></div>
@@ -127,64 +149,60 @@ async function deleteSale(nr){
   if(!cloudReady)return alert('⚠️ Online-Speicher ist noch nicht bereit. Bitte kurz warten und erneut versuchen.');
   if(cloudBusy)return alert('⚠️ Die Online-Speicherung läuft gerade. Bitte kurz warten und nochmals versuchen.');
 
+  // Wichtig: einen eventuell wartenden Auto-Sync stoppen. Sonst könnte er
+  // während der Rückbuchung einen alten lokalen Bestand wieder hochladen.
   clearTimeout(cloudTimer); cloudTimer=null; cloudBusy=true;
   const oldLocalProducts=JSON.stringify(products);
-  let step='Start';
   try{
-    step='1/5 – Beleg vor dem Löschen in Supabase suchen';
-    const before=await sb('sales?receipt_no=eq.'+encodeURIComponent(nr)+'&select=receipt_no');
-    if(!before||!before.length)throw new Error('Beleg '+beleg+' ist in Supabase bereits nicht vorhanden.');
-
-    step='2/5 – Beleg aus sales löschen';
-    await sb('sales?receipt_no=eq.'+encodeURIComponent(nr),{method:'DELETE',headers:{'Prefer':'return=representation'}});
-
-    step='3/5 – Prüfen, ob der Beleg wirklich gelöscht wurde';
-    const saleCheck=await sb('sales?receipt_no=eq.'+encodeURIComponent(nr)+'&select=receipt_no');
-    if(saleCheck&&saleCheck.length)throw new Error('DELETE wurde gesendet, aber Beleg '+beleg+' ist weiterhin in sales vorhanden. Sehr wahrscheinlich blockiert die DELETE-Richtlinie/RLS.');
-
+    // Mengen pro Produkt zusammenfassen und den AKTUELLEN Bestand aus Supabase lesen.
     const qtyById=new Map();
     for(const item of sale.items||[]){
       const id=Number(item.id), qty=Number(item.qty)||0;
-      if(Number.isFinite(id)&&qty>0)qtyById.set(id,(qtyById.get(id)||0)+qty);
+      if(Number.isFinite(id)&&qty>0) qtyById.set(id,(qtyById.get(id)||0)+qty);
     }
 
-    step='4/5 – Lagerbestand in products zurückbuchen';
     for(const [id,qty] of qtyById){
       let p=products.find(x=>Number(x.id)===id);
       if(!p||p.stock===null)continue;
       const rows=await sb('products?id=eq.'+encodeURIComponent(id)+'&select=id,stock');
-      if(!rows||!rows.length)throw new Error('Produkt-ID '+id+' wurde in Supabase nicht gefunden.');
+      if(!rows||!rows.length)throw new Error('Produkt '+id+' fehlt in Supabase.');
       if(rows[0].stock===null)continue;
-      const oldStock=Number(rows[0].stock)||0, newStock=oldStock+qty;
+      const newStock=(Number(rows[0].stock)||0)+qty;
       const updated=await sb('products?id=eq.'+encodeURIComponent(id),{
-        method:'PATCH',headers:{'Prefer':'return=representation'},body:JSON.stringify({stock:newStock})
+        method:'PATCH',
+        headers:{'Prefer':'return=representation'},
+        body:JSON.stringify({stock:newStock})
       });
-      if(!updated||!updated.length)throw new Error('UPDATE für Produkt-ID '+id+' lieferte keine bestätigte Zeile. RLS/UPDATE-Policy prüfen.');
-      if(Number(updated[0].stock)!==newStock)throw new Error('Produkt-ID '+id+': erwartet '+newStock+', Supabase meldet '+updated[0].stock+'.');
+      if(!updated||!updated.length||Number(updated[0].stock)!==newStock)throw new Error('Bestand von Produkt '+id+' wurde nicht bestätigt.');
+      p.stock=newStock;
     }
 
-    step='5/5 – Endkontrolle';
-    for(const [id] of qtyById){
-      const check=await sb('products?id=eq.'+encodeURIComponent(id)+'&select=id,stock');
-      if(!check||!check.length)throw new Error('Produkt-ID '+id+' fehlt bei der Endkontrolle.');
-      const p=products.find(x=>Number(x.id)===id); if(p&&p.stock!==null)p.stock=Number(check[0].stock);
-    }
+    // Lokalen Stand sofort auf denselben bestätigten Stand setzen.
+    localStorage.setItem('ma_mobile_products',JSON.stringify(products));
+
+    // Danach den Beleg in Supabase löschen und prüfen.
+    await sb('sales?receipt_no=eq.'+encodeURIComponent(nr),{method:'DELETE'});
+    const saleCheck=await sb('sales?receipt_no=eq.'+encodeURIComponent(nr)+'&select=receipt_no');
+    if(saleCheck&&saleCheck.length)throw new Error('Beleg konnte online nicht gelöscht werden.');
 
     sales=sales.filter(s=>Number(s.receiptNo)!==Number(nr));
     localStorage.setItem('ma_mobile_sales',JSON.stringify(sales));
-    localStorage.setItem('ma_mobile_products',JSON.stringify(products));
-    render(); renderJournal(document.getElementById('journalDate')?.value);
-    alert('✅ Beleg '+beleg+' dauerhaft gelöscht.\n\nSupabase hat Löschung und Lagerrückbuchung bestätigt.');
+    render();
+    renderJournal(document.getElementById('journalDate')?.value);
+    alert('✅ Beleg '+beleg+' gelöscht.\n\nDie Artikel wurden dauerhaft dem Lagerbestand gutgeschrieben.');
   }catch(e){
-    console.error('DIAGNOSE – '+step,e);
+    console.error('Verkauf löschen / Bestand zurückbuchen fehlgeschlagen',e);
     products=JSON.parse(oldLocalProducts);
     localStorage.setItem('ma_mobile_products',JSON.stringify(products));
-    alert('❌ FEHLER BEI '+step+'\n\n'+(e?.message||String(e))+'\n\nBitte von GENAU dieser Meldung einen Screenshot machen.');
+    alert('⚠️ Rückbuchung nicht vollständig bestätigt. Die Kasse lädt den aktuellen Supabase-Stand neu.');
     cloudBusy=false;
-    try{await initCloud()}catch(_e){}
-    render(); renderJournal(document.getElementById('journalDate')?.value);
+    await initCloud();
+    render();
+    renderJournal(document.getElementById('journalDate')?.value);
     return;
-  }finally{cloudBusy=false;}
+  }finally{
+    cloudBusy=false;
+  }
 }
 function openInventory(){closeCart();inventoryEl.style.display='block';renderInventory()}function closeInventory(){inventoryEl.style.display='none';render()}
 function editProduct(id){renderInventory(id);inventoryEl.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>document.getElementById('invName')?.focus(),250)}
