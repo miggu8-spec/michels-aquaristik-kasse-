@@ -1,0 +1,308 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Michels Aquaristik Kasse V2</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#123b2b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Michels Kasse"><style>
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f2f5f2;color:#183026;padding-bottom:105px}
+header{background:#123b2b;color:#fff;padding:14px 16px;position:sticky;top:0;z-index:10} header b{font-size:20px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:12px;position:sticky;top:50px;background:#f2f5f2;z-index:9}.tabs button{white-space:nowrap;border:0;border-radius:18px;padding:9px 13px;background:#dce9df;font-weight:700}.tabs button.active{background:#287447;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 10px 14px}.card{background:#fff;border-radius:13px;overflow:hidden;box-shadow:0 1px 7px #0002}
+.card img{width:100%;aspect-ratio:1/1;object-fit:contain;object-position:center center;display:block;background:#fff}.info{padding:9px}.name{font-weight:800;min-height:39px;font-size:14px}.price{font-size:18px;font-weight:800;margin:5px 0}.stock{font-size:12px;color:#607066}.add{width:100%;border:0;border-radius:9px;padding:10px;margin-top:8px;background:#287447;color:#fff;font-weight:800}.add:disabled{background:#999}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd;padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:20}.cartbtn{width:100%;border:0;border-radius:12px;background:#123b2b;color:#fff;padding:14px;font-size:17px;font-weight:800}
+.sheet{display:none;position:fixed;inset:0;background:#0007;z-index:30}.panel{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;max-height:85vh;overflow:auto;padding:16px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+.row{padding:10px 0;border-bottom:1px solid #ddd}.qty button{width:34px;height:34px;margin:5px;border:0;border-radius:8px}.total{font-size:26px;font-weight:900;margin:14px 0}.pay{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.pay button,.close,.printbtn,.journalbtn,.backbtn{border:0;border-radius:10px;padding:12px;font-weight:800}.pay button{background:#287447;color:#fff}.close{width:100%;margin-top:10px}.printbtn{width:100%;margin-top:10px;background:#123b2b;color:#fff;display:none}.receipt{white-space:pre-wrap;font-family:monospace;background:#f6f6f6;padding:12px;margin-top:12px}.journalbtn{width:100%;margin-top:10px;background:#dce9df;color:#123b2b}.journal{display:none;position:fixed;inset:0;background:#f2f5f2;z-index:40;overflow:auto;padding-bottom:30px}.journalhead{position:sticky;top:0;background:#123b2b;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}.backbtn{background:#fff;color:#123b2b;padding:8px 10px}.journalbody{max-width:900px;margin:auto;padding:14px}.sale,.summary,.invcard,.invform,.backupbox{background:#fff;border-radius:13px;padding:13px;margin-bottom:10px;box-shadow:0 1px 7px #0002}.saleTop,.invtop{display:flex;justify-content:space-between;gap:10px}.saleItems{font-size:13px;color:#506057;margin:8px 0}.sale button{border:0;border-radius:9px;padding:9px 11px;background:#287447;color:#fff;font-weight:800;margin-right:6px;margin-top:8px}.sale button.deleteSale{background:#b42318}.empty{text-align:center;padding:35px;color:#607066}.summary{padding:14px;margin-bottom:14px}.summary h3{margin:0 0 12px}.sumgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.sumcard{background:#eef5ef;border-radius:10px;padding:10px}.sumcard small{display:block;color:#607066}.sumcard b{font-size:18px}.sumtotal{grid-column:1/-1;background:#dce9df}.sumdate{font-size:13px;color:#607066;margin-bottom:10px}.datefilter{display:flex;gap:8px;align-items:end;margin:0 0 12px;flex-wrap:wrap}.datefilter label{font-size:12px;color:#607066}.datefilter input{display:block;margin-top:4px;padding:9px;border:1px solid #cbd8cf;border-radius:9px;background:#fff}.datefilter button{border:0;border-radius:9px;padding:10px 12px;background:#dce9df;color:#123b2b;font-weight:800}.monthsummary{margin-top:10px;padding-top:10px;border-top:1px solid #dbe5dd}
+.managebtn{width:100%;margin-top:10px;border:0;border-radius:10px;padding:12px;background:#dce9df;color:#123b2b;font-weight:800}.inventory{display:none;position:fixed;inset:0;background:#f2f5f2;z-index:45;overflow:auto;padding-bottom:30px}.invbody{max-width:900px;margin:auto;padding:14px}.invtop{align-items:center}.invlow{color:#a43b22;font-weight:800}.invactions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.invactions button,.invform button{border:0;border-radius:9px;padding:9px 11px;background:#287447;color:#fff;font-weight:800}.invactions .edit,.invform .edit{background:#dce9df;color:#123b2b}.invform{padding:14px;margin-bottom:14px}.invform input,.invform select{width:100%;padding:10px;border:1px solid #cbd8cf;border-radius:9px;margin:5px 0 10px}.warn{background:#fff2e8;border-radius:9px;padding:8px;margin-top:8px;font-size:13px}.deletebtn{background:#f6dddd!important;color:#8b1e1e!important}.catmanage{background:#eef5ef;border-radius:11px;padding:12px;margin:0 0 14px}.catrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.catpill{display:flex;align-items:center;gap:5px;background:#fff;border:1px solid #d5dfd7;border-radius:18px;padding:6px 8px 6px 10px;font-size:13px}.catpill button{padding:3px 7px!important;background:#f6dddd!important;color:#8b1e1e!important}.pkgbox{background:#f7faf7;border:1px solid #dce9df;border-radius:10px;padding:10px;margin:3px 0 10px}.pkgbox b{display:block;margin-bottom:6px}.pkghint,.photoHint,.backupnote{font-size:12px;color:#607066}.package{font-size:12px;color:#287447;font-weight:700;margin-top:3px}.photoPick{display:block;width:100%;border:2px dashed #9bb6a2;border-radius:11px;padding:12px;margin:5px 0 10px;background:#eef5ef;color:#123b2b;text-align:center;font-weight:800;cursor:pointer}.photoPick input,.backupactions input{display:none}.photoPreview{display:none;margin:0 0 10px}.photoPreview img{width:120px;height:120px;object-fit:cover;border-radius:12px;display:block;border:1px solid #d5dfd7}.backupbox{padding:14px;margin-bottom:14px}.backupactions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.backupactions button,.backupactions label{border:0;border-radius:9px;padding:11px;background:#123b2b;color:#fff;font-weight:800;text-align:center;cursor:pointer}
+/* Responsive Optimierung für iPhone + iPad – Kassenlogik unverändert */
+@media (min-width:700px){
+  body{padding-bottom:126px;font-size:18px}
+  header{padding:20px 26px} header b{font-size:28px}
+  .tabs{top:68px;padding:16px 22px;gap:12px;justify-content:flex-start}.tabs button{font-size:18px;padding:14px 20px;border-radius:22px}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1180px;margin:0 auto;padding:8px 22px 28px}
+  .card{border-radius:18px}.info{padding:15px}.name{font-size:20px;min-height:52px}.price{font-size:27px;margin:8px 0}.stock,.package{font-size:16px}.add{min-height:56px;font-size:19px;border-radius:12px}
+  .bottom{padding:14px 22px calc(14px + env(safe-area-inset-bottom))}.cartbtn{max-width:1136px;margin:auto;display:block;min-height:62px;font-size:23px;border-radius:15px}
+  .panel{left:50%;right:auto;transform:translateX(-50%);width:min(820px,94vw);bottom:18px;border-radius:22px;max-height:90vh;padding:26px}.panel h2{font-size:28px}
+  .row{font-size:19px;padding:14px 0}.qty button{width:50px;height:50px;font-size:22px}.total{font-size:36px}.pay{gap:10px}.pay button,.close,.printbtn,.journalbtn,.managebtn{min-height:56px;font-size:18px}
+  .journalhead{padding:18px 22px;font-size:20px}.backbtn{font-size:17px;padding:11px 14px}
+  .journalbody,.invbody{max-width:1150px;padding:22px}.sale,.summary,.invcard,.invform,.backupbox{padding:20px;border-radius:17px;font-size:17px}.saleItems{font-size:16px}.sumgrid{grid-template-columns:repeat(4,1fr);gap:12px}.sumtotal{grid-column:auto}.sumcard b{font-size:23px}
+  .invform input,.invform select{font-size:18px;min-height:52px}.invactions button,.invform button{min-height:50px;font-size:17px}.photoPick{font-size:17px;padding:16px}
+}
+@media (min-width:1000px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr));max-width:1320px}
+}
+@media (max-width:699px){
+  .tabs{-webkit-overflow-scrolling:touch}.tabs button,.add,.cartbtn,.pay button,.close,.printbtn,.journalbtn,.managebtn{touch-action:manipulation}
+}
+@media (orientation:landscape) and (min-width:700px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr));max-width:1320px}
+}
+
+/* iPad Vollbild-Layout: nutzt die verfügbare Bildschirmfläche, ohne Kassenlogik zu ändern */
+@media (min-width:700px){
+  html,body{width:100%;min-height:100%;}
+  body{padding-bottom:112px;}
+  header{width:100%;}
+  .tabs{width:100%;}
+  .grid{width:100%;max-width:none;margin:0;padding:12px 18px 26px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;}
+  .card img{aspect-ratio:4/3;max-height:240px;}
+  .bottom{width:100%;}
+  .cartbtn{max-width:none;width:100%;}
+  .journalbody,.invbody{width:100%;max-width:none;padding:22px 28px;}
+}
+@media (min-width:700px) and (orientation:landscape){
+  body{padding-bottom:104px;}
+  header{padding:14px 24px;} header b{font-size:24px;}
+  .tabs{top:56px;padding:12px 18px;}
+  .tabs button{font-size:16px;padding:11px 17px;}
+  .grid{grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px;padding:10px 18px 20px;}
+  .card img{aspect-ratio:16/10;max-height:190px;}
+  .info{padding:11px 13px}.name{font-size:17px;min-height:42px}.price{font-size:22px}.stock,.package{font-size:14px}.add{min-height:48px;font-size:17px;}
+  .bottom{padding:10px 18px calc(10px + env(safe-area-inset-bottom));}.cartbtn{min-height:56px;font-size:20px;}
+}
+@media (min-width:1000px) and (orientation:landscape){
+  .grid{grid-template-columns:repeat(5,minmax(0,1fr));}
+}
+</style></head><body>
+<header><b>🦐 Michels Aquaristik – Kasse V2</b></header><div class=tabs id=tabs></div><div class=grid id=grid></div>
+<div class=bottom><button type=button class=cartbtn onclick="openCart()">🛒 Warenkorb <span id=count>0</span> Artikel · <span id=bt>CHF 0.00</span></button></div>
+<div class=sheet id=sheet onclick="if(event.target===this)closeCart()"><div class=panel><h2>Warenkorb</h2><div id=cart></div><div class=total id=total></div>
+<div class=pay><button type=button onclick="checkout('Bar')">Bar</button><button type=button onclick="checkout('TWINT')">TWINT</button><button type=button onclick="checkout('Karte')">Karte</button></div>
+<button type=button class=close onclick=closeCart()>Weiter einkaufen</button><button type=button class=journalbtn onclick=openJournal()>📒 Kassenjournal</button><button type=button class=managebtn onclick=openInventory()>📦 Lagerverwaltung</button><button type=button class=printbtn id=printbtn onclick=printReceipt()>🖨️ Direkt auf Epson drucken</button><button type=button class=journalbtn onclick=printerSettings()>⚙️ Epson Drucker-Einstellungen</button><div id=receipt></div></div></div>
+<div class=journal id=journal><div class=journalhead><button type=button class=backbtn onclick=closeJournal()>← Zurück</button><b>📒 Kassenjournal</b></div><div class=journalbody id=journalbody></div></div>
+<div class=inventory id=inventory><div class=journalhead><button type=button class=backbtn onclick=closeInventory()>← Zurück</button><b>📦 Lagerverwaltung</b></div><div class=invbody id=invbody></div></div>
+<script>
+const tabsEl=document.getElementById('tabs'),gridEl=document.getElementById('grid'),countEl=document.getElementById('count'),bottomTotalEl=document.getElementById('bt'),sheetEl=document.getElementById('sheet'),cartEl=document.getElementById('cart'),totalEl=document.getElementById('total'),receiptEl=document.getElementById('receipt'),printBtn=document.getElementById('printbtn'),journalEl=document.getElementById('journal'),journalBodyEl=document.getElementById('journalbody'),inventoryEl=document.getElementById('inventory'),invBodyEl=document.getElementById('invbody');
+let lastReceipt='';
+
+const SUPABASE_URL='https://dmbezrpvftlcbewrrliu.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtYmV6cnB2ZnRsY2Jld3JybGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1NzQyODMsImV4cCI6MjEwNjE1MDI4M30.WrKTt2XftYupJop-JahW9sXB4Q8TcJYHqCvWfG0cjp8';
+const sbHeaders={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
+let cloudReady=false, cloudTimer=null, cloudBusy=false;
+
+async function sb(path,options={}){
+  const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...options,headers:{...sbHeaders,...(options.headers||{})}});
+  if(!r.ok) throw new Error('Supabase '+r.status+': '+await r.text());
+  const t=await r.text(); return t?JSON.parse(t):null;
+}
+const PHOTO_BUCKET='product-images';
+function photoPublicUrl(path){return SUPABASE_URL+'/storage/v1/object/public/'+PHOTO_BUCKET+'/'+path}
+async function uploadProductPhoto(file,productId){
+  if(!file||!file.type.startsWith('image/'))throw new Error('Bitte eine Bilddatei auswählen.');
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),15000);
+  try{
+    // Auf dem iPhone das Original direkt hochladen. Dadurch kann die Bildverarbeitung
+    // im Browser den Speichervorgang nicht mehr blockieren.
+    let ext=(file.name&&file.name.includes('.'))?file.name.split('.').pop().toLowerCase():'jpg';
+    if(!/^[a-z0-9]{2,5}$/.test(ext))ext='jpg';
+    const path='product-'+productId+'-'+Date.now()+'.'+ext;
+    const r=await fetch(SUPABASE_URL+'/storage/v1/object/'+PHOTO_BUCKET+'/'+path,{
+      method:'POST',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':file.type||'application/octet-stream'},
+      body:file,
+      signal:controller.signal,
+      cache:'no-store'
+    });
+    if(!r.ok)throw new Error('Foto-Upload '+r.status+': '+await r.text());
+    return photoPublicUrl(path);
+  }catch(e){
+    if(e&&e.name==='AbortError')throw new Error('Foto-Upload hat zu lange gedauert (15 Sekunden).');
+    throw e;
+  }finally{clearTimeout(timeout)}
+}
+function productToDb(p){return {id:Number(p.id),name:p.name,price:Number(p.price)||0,stock:p.stock===null?null:Number(p.stock),category:p.category||'',image:p.image||'',min_stock:Number(p.minStock)||0,package_qty:p.packageQty?Number(p.packageQty):null,package_price:p.packagePrice===null||p.packagePrice===undefined?null:Number(p.packagePrice)}}
+function productFromDb(p){return {id:Number(p.id),name:p.name,price:Number(p.price),stock:p.stock===null?null:Number(p.stock),category:p.category||'',image:p.image||'',minStock:Number(p.min_stock)||0,packageQty:p.package_qty===null?null:Number(p.package_qty),packagePrice:p.package_price===null?null:Number(p.package_price)}}
+function saleToDb(x){return {receipt_no:Number(x.receiptNo),created_at:x.date,payment_method:x.payment,total:Number(x.total)||0,items:x.items||[]}}
+function saleFromDb(x){return {receiptNo:Number(x.receipt_no),date:x.created_at,payment:x.payment_method,total:Number(x.total)||0,items:x.items||[]}}
+
+async function cloudSyncState(){
+  if(!cloudReady||cloudBusy)return;
+  cloudBusy=true;
+  try{
+    const dbProducts=await sb('products?select=id');
+    const localIds=new Set(products.map(p=>Number(p.id)));
+    for(const row of dbProducts||[]) if(!localIds.has(Number(row.id))) await sb('products?id=eq.'+encodeURIComponent(row.id),{method:'DELETE'});
+    if(products.length) await sb('products?on_conflict=id',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify(products.map(productToDb))});
+    await sb('settings?on_conflict=key',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify([
+      {key:'receipt_no',value:Number(localStorage.getItem('ma_mobile_receipt')||0)},
+      {key:'categories',value:categories}
+    ])});
+    const sales=JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]');
+    if(sales.length) await sb('sales?on_conflict=receipt_no',{method:'POST',headers:{'Prefer':'resolution=ignore-duplicates'},body:JSON.stringify(sales.map(saleToDb))});
+  }catch(e){console.error('Cloud-Speicherung fehlgeschlagen',e)}
+  finally{cloudBusy=false}
+}
+function queueCloudSync(){if(!cloudReady)return;clearTimeout(cloudTimer);cloudTimer=setTimeout(cloudSyncState,350)}
+async function saveProductsNow(){
+  if(!cloudReady) throw new Error('Cloud noch nicht bereit');
+  if(products.length) await sb('products?on_conflict=id',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify(products.map(productToDb))});
+}
+
+
+async function initCloud(){
+  try{
+    const [dbProducts,dbSettings,dbSales]=await Promise.all([
+      sb('products?select=*&order=id.asc'),
+      sb('settings?select=key,value'),
+      sb('sales?select=*&order=receipt_no.asc')
+    ]);
+    const settings=Object.fromEntries((dbSettings||[]).map(x=>[x.key,x.value]));
+    if(dbProducts&&dbProducts.length){
+      products=dbProducts.map(productFromDb);
+      localStorage.setItem('ma_mobile_products',JSON.stringify(products));queueCloudSync();
+    } else {
+      await sb('products?on_conflict=id',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify(products.map(productToDb))});
+    }
+    if(Array.isArray(settings.categories)){
+      categories=settings.categories;
+      localStorage.setItem('ma_mobile_categories',JSON.stringify(categories));queueCloudSync();
+    }
+    if(settings.receipt_no!==undefined) localStorage.setItem('ma_mobile_receipt',String(Number(settings.receipt_no)||0));queueCloudSync();
+    if(dbSales){
+      const sales=dbSales.map(saleFromDb);
+      localStorage.setItem('ma_mobile_sales',JSON.stringify(sales));queueCloudSync();
+    }
+    cloudReady=true;
+    syncCategories();
+    render();
+    await cloudSyncState();
+    console.log('Michels Kasse: Supabase verbunden');
+  }catch(e){
+    console.error(e);
+    alert('⚠️ Online-Speicher momentan nicht erreichbar.\n\nDie Kasse läuft mit den lokal gespeicherten Daten weiter. Bitte Internetverbindung prüfen.');
+  }
+}
+
+const initial=[{"id":1,"name":"Cardamine lyrata","price":5,"stock":4,"category":"Pflanzen","image":"images/p1.jpg"},{"id":2,"name":"Limnophila sessiliflora","price":5,"stock":4,"category":"Pflanzen","image":"images/p2.jpg"},{"id":3,"name":"Cryptocoryne spiralis 'Red'","price":5,"stock":3,"category":"Pflanzen","image":"images/p3.jpg"},{"id":4,"name":"Pogostemon","price":5,"stock":1,"category":"Pflanzen","image":"images/p4.jpg"},{"id":5,"name":"Hygrophila corymbosa 'Stricta'","price":5,"stock":3,"category":"Pflanzen","image":"images/p5.jpg"},{"id":6,"name":"Anubias gracilis","price":6,"stock":0,"category":"Pflanzen","image":"images/p6.jpg"},{"id":7,"name":"Lobelia cardinalis","price":6,"stock":3,"category":"Pflanzen","image":"images/p7.jpg"},{"id":8,"name":"Bacopa australis","price":5,"stock":6,"category":"Pflanzen","image":"images/p8.jpg"},{"id":9,"name":"Cryptocoryne beckettii 'Petchii'","price":5,"stock":4,"category":"Pflanzen","image":"images/p9.jpg"},{"id":10,"name":"Alternanthera reineckii 'Rosanervig'","price":6,"stock":6,"category":"Pflanzen","image":"images/p10.jpg"},{"id":11,"name":"Tropica CO₂ System Nano","price":75,"stock":2,"category":"Zubehör / CO₂","image":"images/p11.jpg"},{"id":12,"name":"Red Fire Garnelen","price":2,"stock":null,"category":"Garnelen","image":"images/p12.jpg"}];
+let products=JSON.parse(localStorage.getItem('ma_mobile_products')||JSON.stringify(initial)),cart={},cat='Alle';
+let savedCategories=JSON.parse(localStorage.getItem('ma_mobile_categories')||'null'),categories=Array.isArray(savedCategories)?savedCategories:[];
+function syncCategories(){products.forEach(p=>{if(p.category&&!categories.includes(p.category))categories.push(p.category)});categories=categories.filter(Boolean);localStorage.setItem('ma_mobile_categories',JSON.stringify(categories))}
+syncCategories();queueCloudSync(); const money=n=>'CHF '+Number(n).toFixed(2);
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function render(){syncCategories();let cats=['Alle',...categories];tabsEl.innerHTML=cats.map(c=>`<button type=button class="catbtn${c===cat?' active':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');tabsEl.querySelectorAll('.catbtn').forEach(btn=>btn.addEventListener('click',()=>{cat=btn.dataset.cat;render()}));gridEl.innerHTML=products.filter(p=>cat==='Alle'||p.category===cat).map(p=>`<div class=card><img src="${esc(p.image)}"><div class=info><div class=name>${esc(p.name)}</div><div class=price>${money(p.price)} / Stk.</div>${p.packageQty>1&&p.packagePrice>=0?`<div class=package>${p.packageQty} Stk. = ${money(p.packagePrice)}</div>`:''}<div class=stock>${p.stock===null?'Bestand variabel':'Lager: '+p.stock+' Stk.'}</div><button type=button class=add ${p.stock===0?'disabled':''} onclick="add(${p.id})">${p.stock===0?'Ausverkauft':'Hinzufügen'}</button></div></div>`).join('');updateCart()}
+function add(id){let p=products.find(x=>x.id===id),q=cart[id]||0;if(p.stock!==null&&q>=p.stock)return;cart[id]=q+1;updateCart()}
+function change(id,d){let p=products.find(x=>x.id==id),q=(cart[id]||0)+d;if(q<=0)delete cart[id];else if(p.stock===null||q<=p.stock)cart[id]=q;updateCart()}
+function qtyTotal(p,q){let pq=Math.floor(Number(p.packageQty)||0),pp=Number(p.packagePrice);if(pq>1&&Number.isFinite(pp)&&pp>=0){let packs=Math.floor(q/pq),rest=q%pq;return packs*pp+rest*p.price}return q*p.price}
+function priceNote(p,q){let pq=Math.floor(Number(p.packageQty)||0),pp=Number(p.packagePrice);if(pq>1&&Number.isFinite(pp)&&pp>=0&&q>=pq){let packs=Math.floor(q/pq),rest=q%pq;return `${packs} Paket${packs!==1?'e':''} à ${money(pp)}${rest?' + '+rest+' × '+money(p.price):''}`}return `${q} × ${money(p.price)}`}
+function updateCart(){let ids=Object.keys(cart),sum=ids.reduce((s,id)=>{let p=products.find(x=>x.id==id);return s+qtyTotal(p,cart[id])},0),cnt=ids.reduce((s,id)=>s+cart[id],0);countEl.textContent=cnt;bottomTotalEl.textContent=money(sum);totalEl.textContent=money(sum);cartEl.innerHTML=ids.length?ids.map(id=>{let p=products.find(x=>x.id==id),q=cart[id],lineTotal=qtyTotal(p,q);return `<div class=row><b>${esc(p.name)}</b><br>${priceNote(p,q)} = ${money(lineTotal)}<div class=qty><button type=button onclick="change(${id},-1)">−</button><button type=button onclick="change(${id},1)">+</button></div></div>`}).join(''):'Warenkorb ist leer.'}
+function openCart(){sheetEl.style.display='block';updateCart()}function closeCart(){sheetEl.style.display='none'}
+async function checkout(method){let ids=Object.keys(cart);if(!ids.length)return alert('Warenkorb ist leer.');if(!confirm('Verkauf mit '+method+' wirklich abschließen?'))return;let nr=+(localStorage.getItem('ma_mobile_receipt')||0)+1,now=new Date(),sum=0,lines=[],items=[];ids.forEach(id=>{let p=products.find(x=>x.id==id),q=cart[id],lineTotal=qtyTotal(p,q);sum+=lineTotal;lines.push(`${q} x ${p.name}  ${money(lineTotal)}`);items.push({id:p.id,name:p.name,qty:q,price:p.price,packageQty:p.packageQty||null,packagePrice:p.packagePrice??null,total:lineTotal});if(p.stock!==null)p.stock-=q});let sale={receiptNo:nr,date:now.toISOString(),payment:method,total:sum,items};let sales=JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]');sales.push(sale);localStorage.setItem('ma_mobile_sales',JSON.stringify(sales));queueCloudSync();localStorage.setItem('ma_mobile_receipt',nr);queueCloudSync();localStorage.setItem('ma_mobile_products',JSON.stringify(products));try{await saveProductsNow();await cloudSyncState()}catch(e){console.error('Bestand sofort speichern fehlgeschlagen',e);alert('⚠️ Verkauf wurde lokal gespeichert, aber der Lagerbestand konnte online nicht bestätigt werden. Bitte Internetverbindung prüfen und nicht neu laden.')}let dateText=now.toLocaleString('de-CH',{dateStyle:'short',timeStyle:'short'});lastReceipt=`MICHELS AQUARISTIK BLEUER\nBeleg ${String(nr).padStart(6,'0')}\n${dateText}\n------------------------\n${lines.join('\n')}\n------------------------\nTOTAL ${money(sum)}\nZahlung: ${method}\n\nVielen Dank!`;receiptEl.innerHTML=`<div class=receipt>${esc(lastReceipt)}</div>`;printBtn.style.display='block';cart={};render();alert('✅ Verkauf abgeschlossen\\n\\nBeleg '+String(nr).padStart(6,'0')+' · '+money(sum)+' · '+method)}
+function receiptText(sale){let d=new Date(sale.date).toLocaleString('de-CH',{dateStyle:'short',timeStyle:'short'}),lines=sale.items.map(i=>`${i.qty} x ${i.name}  ${money(i.total)}`);return `MICHELS AQUARISTIK BLEUER\nBeleg ${String(sale.receiptNo).padStart(6,'0')}\n${d}\n------------------------\n${lines.join('\n')}\n------------------------\nTOTAL ${money(sale.total)}\nZahlung: ${sale.payment}\n\nVielen Dank!`}
+function openJournal(){closeCart();journalEl.style.display='block';renderJournal()}function closeJournal(){journalEl.style.display='none'}
+function localDateKey(d){let y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
+function renderJournal(selectedDate){let all=JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]'),now=new Date(),defaultKey=localDateKey(now),key=selectedDate||defaultKey,parts=key.split('-').map(Number),chosen=new Date(parts[0],parts[1]-1,parts[2]);if(isNaN(chosen.getTime())){chosen=now;key=defaultKey}let daySales=[],bar=0,twint=0,card=0,total=0,monthSales=[],mbar=0,mtwint=0,mcard=0,mtotal=0;for(let sale of all){let d=new Date(sale.date),amount=Number(sale.total)||0;if(d.getFullYear()===chosen.getFullYear()&&d.getMonth()===chosen.getMonth()){monthSales.push(sale);mtotal+=amount;if(sale.payment==='Bar')mbar+=amount;if(sale.payment==='TWINT')mtwint+=amount;if(sale.payment==='Karte')mcard+=amount}if(localDateKey(d)===key){daySales.push(sale);total+=amount;if(sale.payment==='Bar')bar+=amount;if(sale.payment==='TWINT')twint+=amount;if(sale.payment==='Karte')card+=amount}}let dateText=chosen.toLocaleDateString('de-CH'),monthText=chosen.toLocaleDateString('de-CH',{month:'long',year:'numeric'});let summary=`<div class=summary><h3>📊 Tagesabschluss</h3><div class=datefilter><label>Datum<input id=journalDate type=date value="${key}"></label><button type=button onclick="renderJournal(document.getElementById('journalDate').value)">Anzeigen</button></div><div class=sumdate>${dateText}</div><div class=sumgrid><div class=sumcard><small>Verkäufe</small><b>${daySales.length}</b></div><div class=sumcard><small>Bar</small><b>${money(bar)}</b></div><div class=sumcard><small>TWINT</small><b>${money(twint)}</b></div><div class=sumcard><small>Karte</small><b>${money(card)}</b></div><div class="sumcard sumtotal"><small>Gesamtumsatz</small><b>${money(total)}</b></div></div><div class=monthsummary><h3>📅 Monatsübersicht</h3><div class=sumdate>${monthText}</div><div class=sumgrid><div class=sumcard><small>Verkäufe</small><b>${monthSales.length}</b></div><div class=sumcard><small>Bar</small><b>${money(mbar)}</b></div><div class=sumcard><small>TWINT</small><b>${money(mtwint)}</b></div><div class=sumcard><small>Karte</small><b>${money(mcard)}</b></div><div class="sumcard sumtotal"><small>Monatsumsatz</small><b>${money(mtotal)}</b></div></div></div></div>`;let sales=all.slice().reverse(),list=sales.length?sales.map(s=>`<div class=sale><div class=saleTop><div><b>Beleg ${String(s.receiptNo).padStart(6,'0')}</b><br><small>${new Date(s.date).toLocaleString('de-CH',{dateStyle:'short',timeStyle:'short'})} · ${esc(s.payment)}</small></div><b>${money(s.total)}</b></div><div class=saleItems>${s.items.map(x=>`${x.qty} × ${esc(x.name)}`).join('<br>')}</div><button type=button onclick="reprint(${s.receiptNo})">🖨️ Beleg anzeigen / drucken</button><button type=button class="deleteSale" onclick="deleteSale(${s.receiptNo})">🗑️ Verkauf löschen</button></div>`).join(''):'<div class=empty>Noch keine Verkäufe gespeichert.</div>';journalBodyEl.innerHTML=summary+list}
+function reprint(nr){let sales=JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]'),sale=sales.find(s=>s.receiptNo===nr);if(!sale)return;lastReceipt=receiptText(sale);closeJournal();openCart();receiptEl.innerHTML=`<div class=receipt>${esc(lastReceipt)}</div>`;printBtn.style.display='block'}
+async function deleteSale(nr){
+  let sales=JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]'),sale=sales.find(s=>Number(s.receiptNo)===Number(nr));
+  if(!sale)return alert('Verkauf nicht gefunden.');
+  let beleg=String(sale.receiptNo).padStart(6,'0');
+  if(!confirm('Beleg '+beleg+' wirklich löschen?\n\nDie verkauften Artikel werden wieder dem Lagerbestand gutgeschrieben.'))return;
+  if(!cloudReady)return alert('⚠️ Online-Speicher ist noch nicht bereit. Bitte kurz warten und erneut versuchen.');
+  if(cloudBusy)return alert('⚠️ Die Online-Speicherung läuft gerade. Bitte kurz warten und nochmals versuchen.');
+
+  // Wichtig: einen eventuell wartenden Auto-Sync stoppen. Sonst könnte er
+  // während der Rückbuchung einen alten lokalen Bestand wieder hochladen.
+  clearTimeout(cloudTimer); cloudTimer=null; cloudBusy=true;
+  const oldLocalProducts=JSON.stringify(products);
+  try{
+    // Mengen pro Produkt zusammenfassen und den AKTUELLEN Bestand aus Supabase lesen.
+    const qtyById=new Map();
+    for(const item of sale.items||[]){
+      const id=Number(item.id), qty=Number(item.qty)||0;
+      if(Number.isFinite(id)&&qty>0) qtyById.set(id,(qtyById.get(id)||0)+qty);
+    }
+
+    for(const [id,qty] of qtyById){
+      let p=products.find(x=>Number(x.id)===id);
+      if(!p||p.stock===null)continue;
+      const rows=await sb('products?id=eq.'+encodeURIComponent(id)+'&select=id,stock');
+      if(!rows||!rows.length)throw new Error('Produkt '+id+' fehlt in Supabase.');
+      if(rows[0].stock===null)continue;
+      const newStock=(Number(rows[0].stock)||0)+qty;
+      const updated=await sb('products?id=eq.'+encodeURIComponent(id),{
+        method:'PATCH',
+        headers:{'Prefer':'return=representation'},
+        body:JSON.stringify({stock:newStock})
+      });
+      if(!updated||!updated.length||Number(updated[0].stock)!==newStock)throw new Error('Bestand von Produkt '+id+' wurde nicht bestätigt.');
+      p.stock=newStock;
+    }
+
+    // Lokalen Stand sofort auf denselben bestätigten Stand setzen.
+    localStorage.setItem('ma_mobile_products',JSON.stringify(products));
+
+    // Danach den Beleg in Supabase löschen und prüfen.
+    await sb('sales?receipt_no=eq.'+encodeURIComponent(nr),{method:'DELETE'});
+    const saleCheck=await sb('sales?receipt_no=eq.'+encodeURIComponent(nr)+'&select=receipt_no');
+    if(saleCheck&&saleCheck.length)throw new Error('Beleg konnte online nicht gelöscht werden.');
+
+    sales=sales.filter(s=>Number(s.receiptNo)!==Number(nr));
+    localStorage.setItem('ma_mobile_sales',JSON.stringify(sales));
+    render();
+    renderJournal(document.getElementById('journalDate')?.value);
+    alert('✅ Beleg '+beleg+' gelöscht.\n\nDie Artikel wurden dauerhaft dem Lagerbestand gutgeschrieben.');
+  }catch(e){
+    console.error('Verkauf löschen / Bestand zurückbuchen fehlgeschlagen',e);
+    products=JSON.parse(oldLocalProducts);
+    localStorage.setItem('ma_mobile_products',JSON.stringify(products));
+    alert('⚠️ Rückbuchung nicht vollständig bestätigt. Die Kasse lädt den aktuellen Supabase-Stand neu.');
+    cloudBusy=false;
+    await initCloud();
+    render();
+    renderJournal(document.getElementById('journalDate')?.value);
+    return;
+  }finally{
+    cloudBusy=false;
+  }
+}
+function openInventory(){closeCart();inventoryEl.style.display='block';renderInventory()}function closeInventory(){inventoryEl.style.display='none';render()}
+function editProduct(id){renderInventory(id);inventoryEl.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>document.getElementById('invName')?.focus(),250)}
+function renderInventory(editId){let editing=editId?products.find(p=>Number(p.id)===Number(editId)):null,currentImage=editing?.image||'',catOptions=categories.map(c=>`<option value="${esc(c)}" ${c===(editing?.category||'Pflanzen')?'selected':''}>${esc(c)}</option>`).join('');let catManager=`<div class=catmanage><b>🏷️ Eigene Kategorien</b><div style="display:flex;gap:7px;margin-top:8px"><input id=newCat style="margin:0" placeholder="Neue Kategorie"><button type=button onclick=addCategory()>+ Hinzufügen</button></div><div class=catrow>${categories.map(c=>`<span class=catpill>${esc(c)} <button type=button onclick="deleteCategory('${encodeURIComponent(c)}')">×</button></span>`).join('')}</div></div>`;let backup=`<div class=backupbox><b>💾 Datensicherung</b><div class=backupnote>Backup für Produkte, Fotos, Lagerbestand, Kategorien, Verkäufe und Belegnummer.</div><div class=backupactions><button type=button onclick=exportBackup()>⬇️ Backup erstellen</button><label>📥 Backup wiederherstellen<input type=file accept="application/json,.json" onchange=importBackup(this)></label></div></div>`;let form=backup+`<div class=invform><h3>${editing?'Produkt bearbeiten':'Neues Produkt'}</h3>${catManager}<input id=invName placeholder="Produktname" value="${esc(editing?.name||'')}"><input id=invPrice type=number min=0 step=.05 placeholder="Einzelpreis CHF" value="${editing?.price??''}"><div class=pkgbox><b>📦 Paketpreis (optional)</b><input id=invPackageQty type=number min=2 step=1 placeholder="Anzahl im Paket" value="${editing?.packageQty??''}"><input id=invPackagePrice type=number min=0 step=.05 placeholder="Paketpreis CHF" value="${editing?.packagePrice??''}"></div><input id=invStock type=number min=0 step=1 placeholder="Lagerbestand (leer = variabel)" value="${editing?.stock??''}"><select id=invCat>${catOptions}</select><input id=invImage type=hidden value="${esc(currentImage)}"><label class=photoPick>📷 Foto vom Handy auswählen<input id=invPhoto type=file accept="image/*" onchange=chooseProductPhoto(this)></label><div id=invPhotoPreview class=photoPreview style="display:${currentImage?'block':'none'}">${currentImage?`<img src="${esc(currentImage)}">`:''}</div><input id=invMin type=number min=0 step=1 placeholder="Mindestbestand" value="${editing?.minStock??2}"><button type=button onclick="saveProduct(${editing?.id||'null'})">${editing?'Änderungen speichern':'Produkt anlegen'}</button>${editing?` <button type=button class=edit onclick=renderInventory()>Abbrechen</button>`:''}</div>`;let list=products.map(p=>{let low=p.stock!==null&&p.stock<=(p.minStock??2);return `<div class=invcard><div class=invtop><div><b>${esc(p.name)}</b><br><small>${esc(p.category)} · ${money(p.price)}</small></div><b class="${low?'invlow':''}">${p.stock===null?'variabel':p.stock+' Stk.'}</b></div>${low?'<div class=warn>⚠️ Mindestbestand erreicht oder unterschritten</div>':''}<div class=invactions>${p.stock!==null?`<button type=button onclick="stockChange(${p.id},1)">+1 Wareneingang</button><button type=button onclick="stockChange(${p.id},5)">+5</button>`:''}<button type=button class=edit onclick="editProduct(${p.id})">✏️ Bearbeiten</button><button type=button class=deletebtn onclick="deleteProduct(${p.id})">🗑️ Löschen</button></div></div>`}).join('');invBodyEl.innerHTML=form+list}
+function chooseProductPhoto(input){const file=input.files&&input.files[0];if(!file)return;if(!file.type.startsWith('image/'))return alert('Bitte eine Bilddatei auswählen.');let prev=document.getElementById('invPhotoPreview');prev.style.display='block';prev.innerHTML='<img src="'+URL.createObjectURL(file)+'">'}
+async function saveProduct(id){
+  let btn=document.querySelector('.invform button[onclick^="saveProduct"]');if(btn){btn.disabled=true;btn.textContent='⏳ Speichere…'}
+  try{
+    let name=document.getElementById('invName').value.trim(),price=Number(document.getElementById('invPrice').value),stockRaw=document.getElementById('invStock').value,category=document.getElementById('invCat').value.trim()||'Sonstiges',image=document.getElementById('invImage').value.trim(),minStock=Math.max(0,Number(document.getElementById('invMin').value)||0),packageQtyRaw=document.getElementById('invPackageQty').value,packagePriceRaw=document.getElementById('invPackagePrice').value,packageQty=packageQtyRaw===''?null:Math.max(2,Math.floor(Number(packageQtyRaw)||2)),packagePrice=packagePriceRaw===''?null:Number(packagePriceRaw);
+    if((packageQtyRaw===''&&packagePriceRaw!=='')||(packageQtyRaw!==''&&packagePriceRaw==='')||(packagePrice!==null&&(!Number.isFinite(packagePrice)||packagePrice<0)))throw new Error('Paketpreis bitte vollständig eingeben.');
+    if(!name||!Number.isFinite(price)||price<0)throw new Error('Bitte Produktname und gültigen Preis eingeben.');
+    let stock=stockRaw===''?null:Math.max(0,Math.floor(Number(stockRaw)||0));
+    let productId=id?Number(id):Math.max(0,...products.map(p=>Number(p.id)||0))+1;
+    const photo=document.getElementById('invPhoto')?.files?.[0];
+    if(photo) image=await uploadProductPhoto(photo,productId);
+    let next={id:productId,name,price,stock,category,image,minStock,packageQty,packagePrice};
+    if(!cloudReady)throw new Error('Online-Speicher ist noch nicht bereit. Bitte kurz warten.');
+    await sb('products?on_conflict=id',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify([productToDb(next)])});
+    let pos=products.findIndex(x=>Number(x.id)===productId);if(pos>=0)products[pos]=next;else products.push(next);
+    if(!categories.includes(category))categories.push(category);syncCategories();
+    try{localStorage.setItem('ma_mobile_products',JSON.stringify(products))}catch(e){console.warn('Lokale Produktkopie konnte nicht gespeichert werden',e)}
+    renderInventory();render();alert('✅ Änderungen gespeichert.');
+  }catch(e){console.error('Produkt speichern fehlgeschlagen',e);alert('❌ Speichern fehlgeschlagen.\n\n'+(e?.message||e));if(btn){btn.disabled=false;btn.textContent=id?'Änderungen speichern':'Produkt anlegen'}}
+}
+function addCategory(){let el=document.getElementById('newCat'),name=(el?.value||'').trim();if(!name)return;if(categories.some(c=>c.toLowerCase()===name.toLowerCase()))return alert('Diese Kategorie gibt es bereits.');categories.push(name);syncCategories();renderInventory()}
+function deleteCategory(encoded){let name=decodeURIComponent(encoded);if(products.some(p=>p.category===name)){if(!confirm('Kategorie enthält Artikel. In „Sonstiges“ verschieben?'))return;products.forEach(p=>{if(p.category===name)p.category='Sonstiges'});if(!categories.includes('Sonstiges'))categories.push('Sonstiges');localStorage.setItem('ma_mobile_products',JSON.stringify(products))}else if(!confirm('Kategorie wirklich löschen?'))return;queueCloudSync();categories=categories.filter(c=>c!==name);if(cat===name)cat='Alle';syncCategories();renderInventory();render()}
+async function stockChange(id,amount){let p=products.find(x=>x.id===id);if(!p||p.stock===null)return;let oldStock=p.stock;p.stock=Math.max(0,p.stock+amount);localStorage.setItem('ma_mobile_products',JSON.stringify(products));try{await saveProductsNow()}catch(e){p.stock=oldStock;localStorage.setItem('ma_mobile_products',JSON.stringify(products));console.error('Bestand speichern fehlgeschlagen',e);alert('⚠️ Lageränderung konnte online nicht gespeichert werden und wurde zurückgesetzt.')}renderInventory();render()}
+function deleteProduct(id){let p=products.find(x=>Number(x.id)===Number(id));if(!p)return;if(!confirm('Artikel „'+p.name+'“ wirklich dauerhaft löschen?\\n\\nAlte Verkäufe und Belege bleiben erhalten.'))return;products=products.filter(x=>Number(x.id)!==Number(id));delete cart[id];localStorage.setItem('ma_mobile_products',JSON.stringify(products));queueCloudSync();renderInventory();render()}
+function exportBackup(){const backup={app:'Michels Aquaristik Kasse',version:2,createdAt:new Date().toISOString(),products,categories,sales:JSON.parse(localStorage.getItem('ma_mobile_sales')||'[]'),receiptNo:Number(localStorage.getItem('ma_mobile_receipt')||0)};const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),d=new Date(),date=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');a.href=URL.createObjectURL(blob);a.download='Michels_Aquaristik_Kasse_V2_Backup_'+date+'.json';document.body.appendChild(a);a.click();a.remove()}
+function importBackup(input){const file=input.files&&input.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const b=JSON.parse(reader.result);if(!b||!Array.isArray(b.products)||!Array.isArray(b.sales)||!Array.isArray(b.categories))throw 0;if(!confirm('Backup wiederherstellen? Die aktuellen Kassendaten werden ersetzt.'))return;products=b.products;categories=b.categories;localStorage.setItem('ma_mobile_products',JSON.stringify(products));queueCloudSync();localStorage.setItem('ma_mobile_categories',JSON.stringify(categories));queueCloudSync();localStorage.setItem('ma_mobile_sales',JSON.stringify(b.sales));queueCloudSync();localStorage.setItem('ma_mobile_receipt',String(Number(b.receiptNo)||0));queueCloudSync();cart={};syncCategories();renderInventory();render();alert('Backup erfolgreich wiederhergestellt.')}catch(e){alert('Ungültiges Kassen-Backup.')}input.value=''};reader.readAsText(file)}
+function xmlEsc(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
+function printerConfig(){let saved=localStorage.getItem('ma_epson_ip');if(!saved||saved==='192.168.118.60'){saved='EPSONB5C121.local';localStorage.setItem('ma_epson_ip',saved)}return {ip:saved,protocol:localStorage.getItem('ma_epson_protocol')||'https'}}
+function printerSettings(){let c=printerConfig(),ip=prompt('Adresse des Epson TM-m30III:',c.ip);if(ip===null)return;ip=ip.trim();if(!ip)return alert('Bitte eine gültige Druckeradresse eingeben.');let https=confirm('HTTPS verwenden?\\n\\nOK = HTTPS\\nAbbrechen = HTTP');localStorage.setItem('ma_epson_ip',ip);localStorage.setItem('ma_epson_protocol',https?'https':'http');alert('Epson gespeichert: '+(https?'https':'http')+'://'+ip)}
+async function epsonPrint(text){let c=printerConfig(),url=c.protocol+'://'+c.ip+'/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000',payload='<?xml version="1.0" encoding="utf-8"?>'+'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><epos-print xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print"><text>'+xmlEsc(text+'\n')+'</text><feed line="2"/><cut type="feed"/></epos-print></s:Body></s:Envelope>',controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);try{let r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/xml; charset=utf-8','If-Modified-Since':'Thu, 01 Jan 1970 00:00:00 GMT'},body:payload,signal:controller.signal,cache:'no-store'}),t=await r.text();if(!r.ok)throw new Error('HTTP '+r.status);if(/success="false"/i.test(t))throw new Error('Epson hat den Druckauftrag abgelehnt.');return true}finally{clearTimeout(timer)}}
+async function printReceipt(){if(!lastReceipt)return;printBtn.disabled=true;let old=printBtn.textContent;printBtn.textContent='⏳ Drucke direkt…';try{await epsonPrint(lastReceipt);alert('✅ Quittung wurde an den Epson TM-m30III gesendet.')}catch(e){let c=printerConfig(),reason=(e&&e.name==='AbortError')?'Zeitüberschreitung – Drucker nicht erreichbar.':(e?.message||'Verbindung fehlgeschlagen.');alert('❌ Epson-Druck nicht möglich.\\n\\n'+reason+'\\n\\nAdresse: '+c.protocol+'://'+c.ip)}finally{printBtn.disabled=false;printBtn.textContent=old}}
+render();initCloud();
+</script><script>if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'))}</script></body></html><style>
+/* iPad: Produktbilder feste Hoehe, damit Karten nicht nach oben/unten springen */
+@media (min-width:700px){
+  .card img{
+    width:100%!important;
+    height:170px!important;
+    min-height:170px!important;
+    max-height:170px!important;
+    aspect-ratio:auto!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+    background:#fff!important;
+  }
+}
+</style>
